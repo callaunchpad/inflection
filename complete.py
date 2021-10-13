@@ -19,8 +19,10 @@ s3_recording_uri = lambda u: f"s3://{S3_BUCKET_NAME}/{recording_uri(u)}"
 
 session = boto3.Session(profile_name=AWS_PROFILE_NAME)
 s3 = session.client('s3')
+polly = session.client("polly")
 
-filenames = ['test.mp3']
+# list of file names that should be located in the data/
+filenames = os.listdir(os.path.join(os.getcwd(), 'data'))
 
 for filename in filenames:
   with closing(open(data_uri(filename), 'rb')) as f:
@@ -30,11 +32,12 @@ transcribe = session.client('transcribe')
 for filename in filenames:
   job_name = filename
   job_uri = s3_recording_uri(filename) # s3://DOC-EXAMPLE-BUCKET1/key-prefix/file.file-extension"
-
+  
+  print(f"Starting transcription job for {filename}")
   transcribe.start_transcription_job(
       TranscriptionJobName=job_name,
       Media={'MediaFileUri': job_uri},
-      MediaFormat='mp3',
+      MediaFormat='wav',
       LanguageCode='en-US'
   )
 
@@ -45,30 +48,24 @@ for filename in filenames:
       print(f"Transcription job '{job_name}' is not ready yet...")
       time.sleep(5)
   assert status['ResponseMetadata']['HTTPStatusCode'] == 200
-  sample_rate = status['TranscriptionJob']['MediaSampleRateHertz']
   transcribe_url = status['TranscriptionJob']['Transcript']['TranscriptFileUri']
   opened = urlopen(transcribe_url)
   data_json = json.loads(opened.read())
-  print(data_json)
   transcribe.delete_transcription_job(TranscriptionJobName=job_name)
   with closing(open(transcription_uri(f"{os.path.splitext(filename)[0]}.json"), 'w')) as f:
     json.dump(data_json, f)
-  
-
-
-polly = session.client("polly")
-
-try:
+  try:
     # Request speech synthesis
-    response = polly.synthesize_speech(Text="Hello world!", OutputFormat="mp3",
-                                        VoiceId="Joanna")
-except (BotoCoreError, ClientError) as error:
-    # The service returned an error, exit gracefully
-    print(error)
-    sys.exit(-1)
+    response = polly.synthesize_speech(Text=data_json['results']['transcripts'][0]['transcript'],
+                                       OutputFormat="mp3",
+                                       VoiceId="Joanna")
+  except (BotoCoreError, ClientError) as error:
+      # The service returned an error, exit gracefully
+      print(error)
+      continue
 
-if 'AudioStream' in response:
+  if 'AudioStream' in response:
     with closing(response["AudioStream"]) as stream:
-        save_path = os.path.join(os.getcwd(), 'data', 'test.mp3')
-        file = open(save_path, 'wb')
-        file.write(stream.read())
+      save_path = os.path.join(os.getcwd(), 'data', filename)
+      file = open(save_path, 'wb')
+      file.write(stream.read())
