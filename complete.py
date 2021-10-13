@@ -12,6 +12,8 @@ S3_BUCKET_NAME = 'patwang123bucket'
 AWS_PROFILE_NAME = 'patwang123'
 AWS_REGION = 'us-east-1'
 
+SUPPORTED_FORMATS = ['.wav', '.mp3']
+
 recording_uri = lambda u: f"recordings/{u}"
 data_uri = lambda u: f"data/{u}"
 transcription_uri = lambda u: f"transcriptions/{u}"
@@ -34,6 +36,9 @@ for filename in filenames:
   job_uri = s3_recording_uri(filename) # s3://DOC-EXAMPLE-BUCKET1/key-prefix/file.file-extension"
   
   print(f"Starting transcription job for {filename}")
+  if filename[-4:] not in SUPPORTED_FORMATS:
+      print(f"File does not end with one of {SUPPORTED_FORMATS}, skipping...")
+ 
   transcribe.start_transcription_job(
       TranscriptionJobName=job_name,
       Media={'MediaFileUri': job_uri},
