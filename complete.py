@@ -24,10 +24,10 @@ s3 = session.client('s3')
 polly = session.client("polly")
 
 # list of file names that should be located in the data/
-filenames = os.listdir(os.path.join(os.getcwd(), 'data'))
+filenames = os.listdir(os.path.join(os.getcwd(), 'recordings'))
 
 for filename in filenames:
-  with closing(open(data_uri(filename), 'rb')) as f:
+  with closing(open(recording_uri(filename), 'rb')) as f:
       p = s3.upload_fileobj(f, S3_BUCKET_NAME, recording_uri(filename))
   
 transcribe = session.client('transcribe')
@@ -42,7 +42,7 @@ for filename in filenames:
   transcribe.start_transcription_job(
       TranscriptionJobName=job_name,
       Media={'MediaFileUri': job_uri},
-      MediaFormat='wav',
+      MediaFormat=filename[-3:],
       LanguageCode='en-US'
   )
 
@@ -52,13 +52,22 @@ for filename in filenames:
           break
       print(f"Transcription job '{job_name}' is not ready yet...")
       time.sleep(5)
+
   assert status['ResponseMetadata']['HTTPStatusCode'] == 200
+
+  # Get location of data from transcription job and read in json
   transcribe_url = status['TranscriptionJob']['Transcript']['TranscriptFileUri']
   opened = urlopen(transcribe_url)
   data_json = json.loads(opened.read())
+
+  # Delete transcription job to clean up AWS or whatever
   transcribe.delete_transcription_job(TranscriptionJobName=job_name)
+
+  # Save file to transcription folder
   with closing(open(transcription_uri(f"{os.path.splitext(filename)[0]}.json"), 'w')) as f:
     json.dump(data_json, f)
+
+  # Using polly to synthesize speech based on transcript
   try:
     # Request speech synthesis
     response = polly.synthesize_speech(Text=data_json['results']['transcripts'][0]['transcript'],
@@ -68,7 +77,8 @@ for filename in filenames:
       # The service returned an error, exit gracefully
       print(error)
       continue
-
+  
+  # Save polly response to data
   if 'AudioStream' in response:
     with closing(response["AudioStream"]) as stream:
       save_path = os.path.join(os.getcwd(), 'data', filename)
