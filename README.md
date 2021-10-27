@@ -1,1 +1,1 @@
-# inflection
+# inflection d
