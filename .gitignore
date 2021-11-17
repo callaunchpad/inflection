@@ -1,6 +1,7 @@
 .vscode
 joanna/
 human/
+recordings/
 transcriptions/
 .env/
 .ipynb_checkpoints/
