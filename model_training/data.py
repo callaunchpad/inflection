@@ -36,8 +36,9 @@ class AudioData(Dataset):
         X, Y = self.align(mfcc_X.T,mfcc_Y.T)
         return X,Y
 
-    def decode(data):
-        inverted_audio = librosa.feature.inverse.mfcc_to_audio(mfcc, sr=self.sampling_frequency, win_length=self.win_length, hop_length=self.hop_length)
+    def decode(self,mfcc):
+        inverted_audio = librosa.feature.inverse.mfcc_to_audio(np.array(mfcc[0].T), sr=self.sampling_frequency, win_length=self.win_length, hop_length=self.hop_length)
+        return inverted_audio
 
 def get_dataloaders(ad):
     val_size = len(ad)//5 
