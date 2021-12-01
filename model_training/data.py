@@ -8,8 +8,8 @@ import numpy as np
 
 class AudioData(Dataset): 
     #Input and output directories (should change to joanna when done)
-    DATASET_INP = "../../../../datasets/cmu_artic" + "/cmu_us_clb_arctic/wav"
-    DATASET_OUT = "../../../../datasets/cmu_artic" + "/cmu_us_rms_arctic/wav"
+    DATASET_INP = "../../../../datasets/inflection/inflection_data" + "/joanna"
+    DATASET_OUT = "../../../../datasets/inflection/inflection_data" + "/human"
     
     def __init__(self, n_mfcc = 40, win_length = 400, hop_length = 160):
         self.data_dir = AudioData.DATASET_INP # Joanna
