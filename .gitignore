@@ -2,3 +2,4 @@
 data/
 recordings/
 transcriptions/
+.env/

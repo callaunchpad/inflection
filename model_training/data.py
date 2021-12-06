@@ -14,7 +14,7 @@ class AudioData(Dataset):
     def __init__(self, n_mfcc = 40, win_length = 400, hop_length = 160):
         self.data_dir = AudioData.DATASET_INP # Joanna
         self.recording_dir = AudioData.DATASET_OUT  # random voices
-        self.sampling_frequency = 16000
+        self.sampling_frequency = 22050
         self.n_mfcc = n_mfcc
         self.win_length = win_length
         self.hop_length = hop_length
