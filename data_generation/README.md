@@ -23,8 +23,8 @@ The final pairs will be stored with the human voice in `recordings/[NAME]/human`
 
 Our input to the system is just someone talking, however this form of voice conversion uses parallel utterances from two speakers. For example:
 
-Input: [Alexa]
-Output: [Trump]
+[Example Input Audio](https://github.com/mraheja/inflection/blob/main/data_generation/example-transcribed.mp3?raw=true)
+[Example Output Audio](https://github.com/mraheja/inflection/blob/main/data_generation/example-steph.mp3?raw=true)
 
 To create these pairs, we implement the following process. 
 
