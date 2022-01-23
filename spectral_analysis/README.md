@@ -1,0 +1,5 @@
+# Spectral Analysis
+
+The goal for spectral analysis is to turn the parallel utterances from [Data Generation] into a vectorized dataset that can be used to train a model. Although there are many ways of doing this, we opt for Mel-Frequency Cepstral Coefficients (MFCCs). This is done through using PyWorld and PySptk to first generate a spectrogram then turn it into MFCCs. The fundamental frequency (`f0`) and aperiodicity (`ap`) are also stored to make decoding simpler, although we currently work under the assumption that these remain constant between the input and output. In the future, we may train on these as well. Next, these MFCCs are aligned using Dynamic Time Warping, with the additional benefit that this creates inputs and outputs of the same length. Finally, these are saved to files titled `X_[NAME]` and `Y_[NAME]`
+
+All of this can be completed by stepping through the `spectral_analysis` notebook.
