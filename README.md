@@ -18,8 +18,8 @@ pip install -r requirements.txt
 
 # Sections
 
-[Data Generation]
-[Spectral Analysis]
-[Model Training]
-[Webapp]
-[Research]
+[Data Generation](https://github.com/mraheja/inflection/tree/main/data_generation)
+[Spectral Analysis](https://github.com/mraheja/inflection/tree/main/spectral_analysis)
+[Model Training](https://github.com/mraheja/inflection/tree/main/model_training)
+[Webapp](https://github.com/mraheja/inflection/tree/main/webapp)
+[Research](https://github.com/mraheja/inflection/tree/main/research)
